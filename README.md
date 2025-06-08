@@ -113,27 +113,6 @@ A classe `EDL` sobrecarrega operadores para permitir uma sintaxe mais intuitiva 
     * `int getC() const`: Retorna o número de colunas da matriz.
     * `const matrix_t& getMat() const`: Retorna uma referência constante aos dados internos da matriz, permitindo acesso sem modificação.
 
-## Como Compilar e Executar
-
-Para compilar e executar este programa em um ambiente C++ (como g++ no MinGW/Linux/macOS):
-
-1.  **Pré-requisitos**: Um compilador C++ (ex: `g++`).
-2.  **Salve o código**: Salve o conteúdo do código em um arquivo com extensão `.cpp` (ex: `edl_class.cpp`).
-3.  **Abra o terminal**: Navegue até o diretório onde você salvou o arquivo.
-4.  **Compile**: Use o seguinte comando para compilar o programa. A flag `-mconsole` é importante para Windows (MinGW) para garantir que seja compilado como um aplicativo de console.
-    ```bash
-    g++ edl_class.cpp -o edl_app -Wall -std=c++11 -mconsole
-    ```
-    * `-o edl_app`: Define o nome do executável de saída como `edl_app`.
-    * `-Wall`: Habilita todos os avisos do compilador, útil para identificar possíveis problemas.
-    * `-std=c++11`: Define o padrão da linguagem C++ a ser usado (pode ser `c++14`, `c++17`, `c++20` para versões mais recentes).
-    * `-mconsole`: Garante que o programa seja compilado como um aplicativo de console no Windows, resolvendo o erro `WinMain@16`.
-5.  **Execute**: Após a compilação bem-sucedida, execute o programa:
-    ```bash
-    ./edl_app
-    ```
-    (No Windows, você pode precisar digitar `edl_app.exe` ou apenas `edl_app` dependendo da configuração do seu terminal).
-
 ## Observações
 
 * Este código utiliza `#include <bits/stdc++.h>` e `using namespace std;` para concisão, práticas comuns em programação competitiva, mas geralmente desaconselhadas em projetos de software maiores devido à portabilidade e possíveis colisões de nomes.
