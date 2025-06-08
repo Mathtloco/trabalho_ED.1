@@ -46,40 +46,98 @@ Este arquivo é um Jupyter Notebook que implementa a calculadora de matrizes. El
 O notebook também inclui um sistema de menu interativo para criar, visualizar e operar com as matrizes.
 
 
-## Implementação em C++
+# Implementação da Classe EDL em C++
 
-### `C++/edl_class.cpp` (ou similar)
+Este repositório contém a implementação da classe base `EDL` (Estrutura de Dados Lineares) em C++. Esta classe foi desenvolvida para representar e operar com matrizes genéricas, sendo a base para uma futura hierarquia de classes de matrizes mais especializadas (como quadradas, triangulares, diagonais, etc.).
 
-Este arquivo contém a tradução da classe base `EDL` do Python para C++. O objetivo é demonstrar a estrutura da classe, a manipulação de dados (`std::vector<std::vector<double>>`), a sobrecarga de operadores e o tratamento de exceções em C++.
+## Visão Geral do Projeto
 
-**Classe `EDL` (Main Class):**
+A classe `EDL` simula o comportamento de uma matriz matemática, permitindo operações fundamentais como adição, subtração e multiplicação, além de conversão para um formato quadrado e impressão formatada. O código busca ser conciso e direto, comum em contextos de programação competitiva.
 
-* **Membros de Dados:**
-    * `mat` (`std::vector<std::vector<double>>`): Armazena os elementos da matriz.
-    * `R` (int): Número de linhas.
-    * `C` (int): Número de colunas.
-* **Construtor:** Inicializa a matriz e suas dimensões, validando a consistência dos dados.
-* **Destrutor Virtual (`virtual ~EDL() = default;`):** Essencial para hierarquias de classes em C++ para garantir a desalocação correta de objetos de subclasses.
-* **Sobrecarga do Operador `<<` (Impressão):** Permite imprimir objetos `EDL` diretamente usando `std::cout`.
-* **Sobrecarga dos Operadores `+`, `-`, `*` (Soma, Subtração, Multiplicação):** Implementam as operações de matrizes, com validação de dimensões e retorno de um novo objeto `EDL` com o resultado. A multiplicação por escalar é tratada para ambas as ordens (escalar * matriz e matriz * escalar).
-* **`to_square()`:** Converte a matriz para um formato quadrado, preenchendo com zeros se necessário.
-* **Getters (`getR()`, `getC()`, `getMat()`):** Métodos para acessar as dimensões e os dados da matriz.
+## Estrutura do Código
 
+O código está contido em um único arquivo:
 
+* `edl_class.cpp`: Contém a definição da classe `EDL` e uma função `main()` para demonstração e teste das suas funcionalidades.
 
-## Conceitos Abordados
+## Detalhes da Classe `EDL`
 
-Este projeto serve como um exemplo prático de:
+A classe `EDL` é a classe base para manipulação de matrizes, com as seguintes características:
 
-* **Programação Orientada a Objetos (POO):** Demonstração de classes, objetos, atributos, métodos, construtores e destrutores.
-* **Herança:** A relação entre a classe `EDL` e suas subclasses (no Python), e a preparação da classe `EDL` em C++ para futura herança.
-* **Polimorfismo:** (Principalmente no Python, e preparado para C++ com `virtual` functions) A capacidade de tratar objetos de diferentes classes de forma uniforme através de uma interface comum.
-* **Sobrecarga de Operadores:** Adaptação de operadores padrão (`+`, `-`, `*`, `<<`) para realizar operações com objetos de matrizes.
-* **Estruturas de Dados:** Uso de listas aninhadas (Python) e `std::vector` aninhados (C++) para representar matrizes.
-* **Tratamento de Exceções:** Uso de `try-except` (Python) e `try-catch` com `std::invalid_argument` (C++) para lidar com erros de dimensões incompatíveis.
-* **Complexidade Algorítmica:** Análise implícita das operações de matrizes em termos de tempo e espaço.
+### Atributos Privados
 
----
+* `mat` (`typedef vector<vector<double>> matrix_t`): Armazena os elementos da matriz como um vetor de vetores de doubles.
+* `R` (int): Representa o número de linhas da matriz.
+* `C` (int): Representa o número de colunas da matriz.
+
+### Construtor
+
+* `EDL(const matrix_t& _mat)`: Inicializa uma nova instância de `EDL` com os dados da matriz fornecida.
+    * Realiza validações para garantir que todas as linhas da matriz de entrada tenham o mesmo número de colunas. Caso contrário, lança uma `std::invalid_argument`.
+    * Lida com o caso de uma matriz vazia, definindo `R` e `C` como zero.
+
+### Destrutor
+
+* `virtual ~EDL() = default;`: Um destrutor virtual padrão é crucial para garantir que a memória seja desalocada corretamente para subclasses que podem herdar de `EDL`, prevenindo vazamentos de memória em contextos polimórficos.
+
+### Sobrecarga de Operadores
+
+A classe `EDL` sobrecarrega operadores para permitir uma sintaxe mais intuitiva para operações com matrizes:
+
+* **Operador de Inserção (`<<`)**:
+    * `friend ostream& operator<<(ostream& os, const EDL& obj)`: Permite a impressão formatada de objetos `EDL` diretamente para um `std::ostream` (como `std::cout`). A saída é formatada para centralizar os elementos em 5 espaços e com uma casa decimal, simulando a formatação Python.
+* **Operador de Adição (`+`)**:
+    * `virtual EDL operator+(const EDL& other) const`: Realiza a soma elemento a elemento de duas matrizes.
+    * Requer que as matrizes tenham as mesmas dimensões; caso contrário, lança uma `std::invalid_argument`.
+    * Retorna um novo objeto `EDL` contendo o resultado da soma.
+* **Operador de Subtração (`-`)**:
+    * `virtual EDL operator-(const EDL& other) const`: Realiza a subtração elemento a elemento de duas matrizes.
+    * Assim como a soma, exige dimensões compatíveis e lança `std::invalid_argument` se não forem.
+    * Retorna um novo objeto `EDL` contendo o resultado da subtração.
+* **Operador de Multiplicação (`*`)**:
+    * `virtual EDL operator*(const EDL& other) const`: Implementa a multiplicação de matrizes padrão.
+        * Requer que o número de colunas da primeira matriz (`this->C`) seja igual ao número de linhas da segunda matriz (`other.R`). Lança `std::invalid_argument` se as dimensões forem incompatíveis.
+        * Retorna um novo objeto `EDL` com o produto das matrizes.
+    * `EDL operator*(double s) const`: Implementa a multiplicação de todos os elementos da matriz por um valor escalar `s`.
+        * Retorna um novo objeto `EDL` com os elementos escalados.
+    * `friend EDL operator*(double s, const EDL& m)`: Permite a multiplicação por escalar quando o escalar é o primeiro operando (ex: `3.0 * minhaMatriz`).
+
+### Métodos Auxiliares
+
+* **`to_square()`**:
+    * `virtual EDL to_square() const`: Converte a matriz para uma matriz quadrada, preenchendo com zeros os elementos adicionais se as dimensões originais não forem iguais.
+    * O tamanho da nova matriz quadrada é o máximo entre o número de linhas e colunas originais.
+    * Retorna um novo objeto `EDL` representando a versão quadrada da matriz.
+* **Getters**:
+    * `int getR() const`: Retorna o número de linhas da matriz.
+    * `int getC() const`: Retorna o número de colunas da matriz.
+    * `const matrix_t& getMat() const`: Retorna uma referência constante aos dados internos da matriz, permitindo acesso sem modificação.
+
+## Como Compilar e Executar
+
+Para compilar e executar este programa em um ambiente C++ (como g++ no MinGW/Linux/macOS):
+
+1.  **Pré-requisitos**: Um compilador C++ (ex: `g++`).
+2.  **Salve o código**: Salve o conteúdo do código em um arquivo com extensão `.cpp` (ex: `edl_class.cpp`).
+3.  **Abra o terminal**: Navegue até o diretório onde você salvou o arquivo.
+4.  **Compile**: Use o seguinte comando para compilar o programa. A flag `-mconsole` é importante para Windows (MinGW) para garantir que seja compilado como um aplicativo de console.
+    ```bash
+    g++ edl_class.cpp -o edl_app -Wall -std=c++11 -mconsole
+    ```
+    * `-o edl_app`: Define o nome do executável de saída como `edl_app`.
+    * `-Wall`: Habilita todos os avisos do compilador, útil para identificar possíveis problemas.
+    * `-std=c++11`: Define o padrão da linguagem C++ a ser usado (pode ser `c++14`, `c++17`, `c++20` para versões mais recentes).
+    * `-mconsole`: Garante que o programa seja compilado como um aplicativo de console no Windows, resolvendo o erro `WinMain@16`.
+5.  **Execute**: Após a compilação bem-sucedida, execute o programa:
+    ```bash
+    ./edl_app
+    ```
+    (No Windows, você pode precisar digitar `edl_app.exe` ou apenas `edl_app` dependendo da configuração do seu terminal).
+
+## Observações
+
+* Este código utiliza `#include <bits/stdc++.h>` e `using namespace std;` para concisão, práticas comuns em programação competitiva, mas geralmente desaconselhadas em projetos de software maiores devido à portabilidade e possíveis colisões de nomes.
+* A classe `EDL` serve como a classe base. A extensão para subclasses específicas (como `square`, `upper_triangular`, etc.) envolveria a criação de novas classes que herdam de `EDL` e sobrescrevem (`override`) seus métodos virtuais com lógicas especializadas.
 
 **Autores:**
 
