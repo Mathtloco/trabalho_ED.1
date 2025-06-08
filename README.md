@@ -83,10 +83,10 @@ Este projeto serve como um exemplo prático de:
 
 **Autores:**
 
-Matheus Mangia
-Pedro Paulo
-João Allemand
-Gabriel Maia
+Matheus Mangia,
+Pedro Paulo,
+João Allemand,
+Gabriel Maia.
 
 
 ---
